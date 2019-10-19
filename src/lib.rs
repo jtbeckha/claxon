@@ -407,6 +407,26 @@ impl<R: io::Read> FlacReader<R> {
         }
     }
 
+    /// Takes ownership of the FlacReader and returns an iterator over all samples that owns the
+    /// underlying BufferedReader.
+    pub fn samples_owned(self) -> FlacSamples<BufferedReader<R>> {
+        match self.input {
+            FlacReaderState::Full(inp) => {
+                FlacSamples {
+                    frame_reader: frame::FrameReader::new(inp),
+                    block: Block::empty(),
+                    sample: 0,
+                    channel: 0,
+                    has_failed: false,
+                }
+            }
+            FlacReaderState::MetadataOnly(..) => {
+                panic!("FlacReaderOptions::metadata_only must be false \
+                       to be able to use FlacReader::samples()")
+            }
+        }
+    }
+
     /// Destroys the FLAC reader and returns the underlying reader.
     ///
     /// Because the reader employs buffering internally, anything in the buffer

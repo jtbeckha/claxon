@@ -18,5 +18,6 @@
 !/testsamples/wasted_bits.flac
 
 # Editor files
+/.idea
 *.swp
 *.swo
